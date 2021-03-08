@@ -11,19 +11,22 @@
     DemoRecord,
     DemoRecord,
     DemoRecord,
+    DemoRecord,
+    DemoRecord,
+    DemoRecord,
+    DemoRecord,
+    DemoRecord,
+    DemoRecord,
+    DemoRecord,
+    DemoRecord,
   ];
 </script>
 
 <style>
-  .wrapper {
-    padding: 0px;
-    margin: 0px;
-  }
+  main { height: 100%; }
 </style>
 
 <main>
-  <div class="wrapper">
-    <RecordStack {components}/>
-  </div>
+  <RecordStack {components}/>
 </main>
 

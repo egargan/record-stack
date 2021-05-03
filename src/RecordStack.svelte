@@ -1,4 +1,9 @@
 <script context="module" lang="ts">
+  enum TransitionSpeed {
+    Slow,
+    Fast,
+  }
+
   class Record {
     container: HTMLElement;
     restTop: number;
@@ -28,6 +33,7 @@
       this.container.scrollIntoView({ behavior: "smooth" });
 
       this.enableTransition();
+      this.setTransitionSpeed(TransitionSpeed.Fast);
     }
 
     rest(): void {
@@ -51,17 +57,30 @@
     }
 
     enableTransition(reflow: boolean = true) {
+      // TODO: is this the cleanest we can do?
       this.container.classList.add('transition-top');
+      this.container.classList.remove('transition-none');
+    }
 
-      if (reflow) {
-        // Force a reflow so any pending style changes are flushed before this
-        // takes effect
-        this.container.offsetHeight;
+    setTransitionSpeed(speed: TransitionSpeed) {
+      switch (speed) {
+        case TransitionSpeed.Slow:
+          this.container.style.transitionDuration = '0.32s';
+          break;
+        case TransitionSpeed.Fast:
+        default:
+          this.container.style.transitionDuration = '0.15s';
+          break;
       }
     }
 
     disableTransition() {
-      this.container.classList.remove('transition-top');
+      this.container.classList.add('transition-none');
+    }
+
+    // Forces a reflow to flush any pending style changes
+    reflow() {
+      this.container.offsetHeight;
     }
 
     addTransitionEndCallback(callback) {
@@ -151,13 +170,17 @@
       selectedRecord.moveTo(lastScrollTop);
       scrollContainer.scrollTop = lastScrollTop;
 
+      selectedRecord.reflow();
       selectedRecord.enableTransition();
-
-      selectedRecord = undefined;
 
       for (let i = 0; i < records.length; i++) {
         records[i].rest();
       }
+
+      selectedRecord.reflow();
+
+      selectedRecord.setTransitionSpeed(TransitionSpeed.Fast);
+      selectedRecord = undefined;
     } else {
       const clickedRecord = records[index];
 
@@ -176,6 +199,7 @@
 
       selectedRecord = clickedRecord;
 
+      clickedRecord.setTransitionSpeed(TransitionSpeed.Slow);
       clickedRecord.moveTo(scrollContainer.scrollTop);
 
       clickedRecord.addTransitionEndCallback(() => {
@@ -186,6 +210,7 @@
         clickedRecord.toTop();
         scrollContainer.scrollTo(0, 0);
 
+        selectedRecord.reflow();
         clickedRecord.enableTransition();
       });
     }
@@ -207,7 +232,12 @@
   }
 
   :global(.transition-top) {
-    transition: top 0.15s ease;
+    transition-property: top;
+    transition-timing-function: ease;
+  }
+
+  :global(.transition-none) {
+    transition-property: none;
   }
 
   :global(.last-selected .body, .last-selected .preview, .last-selected .title) {

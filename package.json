@@ -1,6 +1,12 @@
 {
   "name": "record-stack",
   "version": "1.0.0",
+  "exports": {
+    ".": "./src/lib/RecordStack.svelte"
+  },
+  "files": [
+    "./src/lib/*"
+  ],
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",

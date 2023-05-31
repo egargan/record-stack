@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RecordStack from './RecordStack.svelte';
+  import RecordStack from '../lib/RecordStack.svelte';
   import DemoRecord from './DemoRecord.svelte';
 
   const components = [

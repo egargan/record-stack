@@ -84,11 +84,7 @@
     }
 
     addTransitionEndCallback(callback) {
-      this.container.addEventListener(
-        'transitionend',
-        callback,
-        { once: 'true' },
-      );
+      this.container.addEventListener( 'transitionend', callback, { once: 'true' },);
     }
   }
 </script>
@@ -98,7 +94,7 @@
 
   export let components = [];
 
-  let containers: HTMLElement = [];
+  let containers: HTMLElement[] = [];
   let records: Record[] = [];
 
   let stackContainer: HTMLElement;
@@ -238,10 +234,6 @@
 
   :global(.transition-none) {
     transition-property: none;
-  }
-
-  :global(.last-selected .body, .last-selected .preview, .last-selected .title) {
-    background: antiquewhite !important;
   }
 
   .stack-container {

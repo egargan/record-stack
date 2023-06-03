@@ -19,13 +19,13 @@
       this.restTop = restTop;
 
       // TODO: fallbacks for title, preview, body height
-      const title = container.querySelectorAll('[data-title]')[0];
+      const title = container.querySelectorAll("[data-title]")[0];
       this.titleHeight = title.clientHeight;
 
-      const preview = container.querySelectorAll('[data-preview]')[0];
+      const preview = container.querySelectorAll("[data-preview]")[0];
       this.previewHeight = preview.clientHeight;
 
-      const body = container.querySelectorAll('[data-body]')[0];
+      const body = container.querySelectorAll("[data-body]")[0];
       this.bodyHeight = body.clientHeight;
 
       this.totalHeight = container.clientHeight;
@@ -53,29 +53,29 @@
     }
 
     toTop() {
-      this.container.style.top = '0px';
+      this.container.style.top = "0px";
     }
 
     enableTransition(reflow: boolean = true) {
       // TODO: is this the cleanest we can do?
-      this.container.classList.add('transition-top');
-      this.container.classList.remove('transition-none');
+      this.container.classList.add("transition-top");
+      this.container.classList.remove("transition-none");
     }
 
     setTransitionSpeed(speed: TransitionSpeed) {
       switch (speed) {
         case TransitionSpeed.Slow:
-          this.container.style.transitionDuration = '0.32s';
+          this.container.style.transitionDuration = "0.36s";
           break;
         case TransitionSpeed.Fast:
         default:
-          this.container.style.transitionDuration = '0.15s';
+          this.container.style.transitionDuration = "0.20s";
           break;
       }
     }
 
     disableTransition() {
-      this.container.classList.add('transition-none');
+      this.container.classList.add("transition-none");
     }
 
     // Forces a reflow to flush any pending style changes
@@ -84,13 +84,15 @@
     }
 
     addTransitionEndCallback(callback) {
-      this.container.addEventListener( 'transitionend', callback, { once: 'true' },);
+      this.container.addEventListener("transitionend", callback, {
+        once: "true",
+      });
     }
   }
 </script>
 
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
   export let components = [];
 
@@ -199,10 +201,10 @@
 
       // TEMP: Used for debugging
       if (lastSelectedRecord) {
-        lastSelectedRecord.container.classList.remove('last-selected');
+        lastSelectedRecord.container.classList.remove("last-selected");
       }
       lastSelectedRecord = clickedRecord;
-      lastSelectedRecord.container.classList.add('last-selected');
+      lastSelectedRecord.container.classList.add("last-selected");
 
       lastScrollTop = scrollContainer.scrollTop;
 
@@ -244,6 +246,22 @@
   }
 </script>
 
+<div class="scroll-container" bind:this={scrollContainer}>
+  <div class="stack-container" bind:this={stackContainer}>
+    {#each components as component, index}
+      <article
+        class="record-container"
+        bind:this={containers[index]}
+        on:mouseenter={() => onMouseEnter(index)}
+        on:mouseleave={() => onMouseLeave(index)}
+        on:click={() => onClick(index)}
+      >
+        <svelte:component this={component} />
+      </article>
+    {/each}
+  </div>
+</div>
+
 <style>
   .scroll-container {
     position: relative;
@@ -271,24 +289,6 @@
     position: absolute;
     overflow: hidden;
     width: 100%;
+    min-height: 100%;
   }
 </style>
-
-<div
-  class="scroll-container"
-  bind:this={scrollContainer}>
-  <div
-    class="stack-container"
-    bind:this={stackContainer}>
-    {#each components as component, index}
-      <article
-        class="record-container"
-        bind:this={containers[index]}
-        on:mouseenter={() => onMouseEnter(index)}
-        on:mouseleave={() => onMouseLeave(index)}
-        on:click={() => onClick(index)}>
-        <svelte:component this={component}/>
-      </article>
-    {/each}
-  </div>
-</div>

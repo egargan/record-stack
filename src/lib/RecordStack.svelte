@@ -159,6 +159,23 @@
     if (selectedRecord) {
       stackContainer.style.height = `${restContainerHeight}px`;
 
+      // We can't use 'index' here, as it's possible to click on one of the records below the
+      // selected record
+      const selectedRecordIndex = records.indexOf(selectedRecord);
+
+      // Reset the records' positions below the selected record to account for the new, default
+      // container height, and re-activate their transitions, after they were disabled in the
+      // corresponding loop further down
+      if (lastScrollTop > 0) {
+        let cumulativeHeaderHeight = selectedRecord.totalHeight + lastScrollTop;
+        for (let i = selectedRecordIndex + 1; i < records.length; i++) {
+          records[i].moveTo(cumulativeHeaderHeight);
+          cumulativeHeaderHeight += records[i].titleHeight;
+          records[i].reflow();
+          records[i].enableTransition();
+        }
+      }
+
       selectedRecord.disableTransition();
 
       // These two statements must be paired between the disable/enableTransition
@@ -189,8 +206,10 @@
 
       lastScrollTop = scrollContainer.scrollTop;
 
+      let cumulativeHeaderHeight = clickedRecord.totalHeight + lastScrollTop;
       for (let i = index + 1; i < records.length; i++) {
-        records[i].moveDown(clickedRecord.bodyHeight + clickedRecord.previewHeight);
+        records[i].moveTo(cumulativeHeaderHeight);
+        cumulativeHeaderHeight += records[i].titleHeight;
       }
 
       selectedRecord = clickedRecord;
@@ -202,12 +221,24 @@
         stackContainer.style.height = `${selectedRecord.totalHeight}px`;
 
         clickedRecord.disableTransition();
-
         clickedRecord.toTop();
         scrollContainer.scrollTo(0, 0);
 
         selectedRecord.reflow();
         clickedRecord.enableTransition();
+
+        // If the container has been scrolled, the records beneath the selected record need to have
+        // their positions updated to account for the new new container scroll position and height,
+        // that's set just above.
+        if (lastScrollTop > 0) {
+          let cumulativeHeaderHeight = clickedRecord.totalHeight;
+          for (let i = index + 1; i < records.length; i++) {
+            records[i].disableTransition();
+            records[i].moveTo(cumulativeHeaderHeight);
+            cumulativeHeaderHeight += records[i].titleHeight;
+            records[i].reflow();
+          }
+        }
       });
     }
   }

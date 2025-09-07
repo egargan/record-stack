@@ -1,8 +1,5 @@
 <script context="module" lang="ts">
-  enum TransitionSpeed {
-    Slow,
-    Fast,
-  }
+  type TransitionSpeed = "slow" | "fast";
 
   class Record {
     container: HTMLElement;
@@ -33,7 +30,7 @@
       this.container.scrollIntoView({ behavior: "smooth" });
 
       this.enableTransition();
-      this.setTransitionSpeed(TransitionSpeed.Fast);
+      this.setTransitionSpeed("fast");
     }
 
     rest(): void {
@@ -64,10 +61,10 @@
 
     setTransitionSpeed(speed: TransitionSpeed) {
       switch (speed) {
-        case TransitionSpeed.Slow:
+        case "slow":
           this.container.style.transitionDuration = "0.36s";
           break;
-        case TransitionSpeed.Fast:
+        case "fast":
         default:
           this.container.style.transitionDuration = "0.20s";
           break;
@@ -84,9 +81,7 @@
     }
 
     addTransitionEndCallback(callback) {
-      this.container.addEventListener("transitionend", callback, {
-        once: "true",
-      });
+      this.container.addEventListener("transitionend", callback, { once: true });
     }
   }
 </script>
@@ -194,7 +189,7 @@
 
       selectedRecord.reflow();
 
-      selectedRecord.setTransitionSpeed(TransitionSpeed.Fast);
+      selectedRecord.setTransitionSpeed("fast");
       selectedRecord = undefined;
     } else {
       const clickedRecord = records[index];
@@ -216,7 +211,7 @@
 
       selectedRecord = clickedRecord;
 
-      clickedRecord.setTransitionSpeed(TransitionSpeed.Slow);
+      clickedRecord.setTransitionSpeed("slow");
       clickedRecord.moveTo(scrollContainer.scrollTop);
 
       clickedRecord.addTransitionEndCallback(() => {
